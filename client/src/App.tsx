@@ -1,16 +1,50 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0);
+import Username from "./components/Username";
+import Password from "./components/Password";
+import Register from "./components/Register";
+import Recovery from "./components/Recovery";
+import Reset from "./components/Reset";
+import PageNotFound from "./components/PageNotFound";
+import Profile from "./components/Profile";
 
+/** ----- ROUTE ROUTER ----- */
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Username />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/password",
+    element: <Password />,
+  },
+  {
+    path: "/reset",
+    element: <Reset />,
+  },
+  {
+    path: "/recovery",
+    element: <Recovery />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+  },
+  {
+    path: "*",
+    element: <PageNotFound />,
+  },
+]);
+const App = () => {
   return (
-    <div>
-      <h1>React App</h1>
-    </div>
+    <main>
+      <RouterProvider router={router}></RouterProvider>
+    </main>
   );
-}
+};
 
 export default App;
