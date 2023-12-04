@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import styles from "../styles/Username.module.css";
 import { Toaster } from "react-hot-toast";
 
 export default function Recovery() {
+  const navigate = useNavigate();
   return (
     <div className="container mx-auto">
       <Toaster position="top-center" reverseOrder={false} />
@@ -16,16 +18,10 @@ export default function Recovery() {
 
           <form className="py-20">
             <div className="textbox flex flex-col items-center gap-6">
-              <div className="input text-center">
-                <span className="py-4 text-sm text-left text-gray-500">
-                  Enter 6 digit OTP sent to your email address
-                </span>
-                <input
-                  className={styles.textbox}
-                  type="text"
-                  placeholder="OTP"
-                />
-              </div>
+              <span className="py-4 text-sm text-left text-gray-500">
+                Enter 6 digit OTP sent to your email address
+              </span>
+              <input className={styles.textbox} type="text" placeholder="OTP" />
 
               <button className={`${styles.btn} bg-indigo-500`} type="submit">
                 Recover
@@ -34,7 +30,13 @@ export default function Recovery() {
 
             <div className="text-center py-4">
               <span className="text-gray-500">
-                Can't get OTP ? <button className="text-red-500">Reset</button>
+                Can't get OTP ?{" "}
+                <button
+                  className="text-red-500"
+                  onClick={() => navigate("/reset")}
+                >
+                  Reset
+                </button>
               </span>
             </div>
           </form>

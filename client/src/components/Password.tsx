@@ -141,7 +141,7 @@ export default function Password() {
               </div>
 
               <button className={`${styles.btn} bg-indigo-500`} type="submit">
-                Sign up
+                Sign in
               </button>
             </div>
 
