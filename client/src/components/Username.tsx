@@ -1,9 +1,24 @@
 import { Link } from "react-router-dom";
 import styles from "../styles/Username.module.css";
-
+import { useFormik } from "formik";
+import { Toaster } from "react-hot-toast";
+import { usernameValidate } from "../helper/Validate";
 export default function Username() {
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+    },
+    validate: usernameValidate,
+    validateOnBlur: false,
+    validateOnChange: false,
+    onSubmit: async (values) => {
+      console.log(values);
+    },
+  });
+
   return (
     <div className="container mx-auto">
+      <Toaster position="top-center" reverseOrder={false}></Toaster>
       <div className="flex justify-center items-center h-screen">
         <div className={styles.glass}>
           <div className="title flex flex-col items-center">
@@ -13,7 +28,7 @@ export default function Username() {
             </span>
           </div>
 
-          <form className="py-1">
+          <form className="py-1" onSubmit={formik.handleSubmit}>
             <div className="profile flex justify-center py-4">
               <img
                 src="https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
@@ -24,11 +39,12 @@ export default function Username() {
 
             <div className="textbox flex flex-col items-center gap-6">
               <input
+                {...formik.getFieldProps("username")}
                 className={styles.textbox}
                 type="text"
                 placeholder="Username"
               />
-              <button className={styles.btn} type="submit">
+              <button className={`${styles.btn} bg-indigo-500`} type="submit">
                 Let's Go
               </button>
             </div>
