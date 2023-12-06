@@ -11,6 +11,68 @@ export async function passwordValidate(values: { password: string }) {
   return errors;
 }
 
+interface ErrorType {
+  email?: string;
+  username?: string;
+  password?: string | number;
+  exist?: string;
+}
+
+/** Validate Reset Password */
+
+export async function resetPasswordValidate(values: {
+  password: string;
+  confirm_pwd: string;
+}) {
+  const errors = passwordVerify({}, values);
+  if (values.password !== values.confirm_pwd) {
+    errors.exist = toast.error("Password and Confirm Password must be same");
+  }
+  return errors;
+}
+
+/**---------------------------- Validate Profile Page ---------------------------- */
+export async function profileValidate(values: { email: string }) {
+  const errors = emailVerify({}, values);
+  return errors;
+}
+
+/**---------------------------- Validate Register form ---------------------------- */
+
+export async function registerValidate(values: {
+  username: string;
+  password: string;
+  email: string;
+}) {
+  const errors = usernameVerify({}, values);
+  passwordVerify(errors, values);
+  emailVerify(errors, values);
+
+  return errors;
+}
+
+/** Validate Email */
+function emailVerify(error: ErrorType = {}, values: { email: string }) {
+  if (!values.email) {
+    error.email = toast.error("Email is required");
+  } else if (values.email.includes(" ")) {
+    error.email = toast.error("Invalid Email");
+  } else if (!/\S+@\S+\.\S+/.test(values.email)) {
+    error.email = toast.error("Email is invalid");
+  }
+  return error;
+}
+
+/** Validate User form */
+function usernameVerify(error: ErrorType = {}, values: { username: string }) {
+  if (!values.username) {
+    error.username = toast.error("Username is required");
+  } else if (values.username.includes(" ")) {
+    error.username = toast.error("Invalid Username");
+  }
+  return error;
+}
+
 /** Validate password */
 function passwordVerify(error: ErrorType = {}, values: { password: string }) {
   //Special Characters
@@ -55,34 +117,5 @@ function passwordVerify(error: ErrorType = {}, values: { password: string }) {
     return error;
   }
 
-  return error;
-}
-
-interface ErrorType {
-  username?: string;
-  password?: string | number;
-  exist?: string;
-}
-
-/** Validate Reset Password */
-
-export async function resetPasswordValidate(values: {
-  password: string;
-  confirm_pwd: string;
-}) {
-  const errors = passwordVerify({}, values);
-  if (values.password !== values.confirm_pwd) {
-    errors.exist = toast.error("Password and Confirm Password must be same");
-  }
-  return errors;
-}
-
-/** Validate User form */
-function usernameVerify(error: ErrorType = {}, values: { username: string }) {
-  if (!values.username) {
-    error.username = toast.error("Username is required");
-  } else if (values.username.includes(" ")) {
-    error.username = toast.error("Invalid Username");
-  }
   return error;
 }

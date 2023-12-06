@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import styles from "../styles/Username.module.css";
 import { useFormik } from "formik";
 import { Toaster } from "react-hot-toast";
-import { passwordValidate } from "../helper/Validate";
+import { registerValidate } from "../helper/Validate";
 
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
-import covertToBase65 from "../helper/ConvertImage";
+import covertToBase64 from "../helper/ConvertImage";
 
 export default function Register() {
   const [showCondition, setShowCondition] = useState(false);
-  const [file, setFile] = useState();
+  const [file, setFile] = useState<string | null>(null);
   //Validate the condition of passwords
   const [passwordConditions, setPassowrdConditions] = useState({
     noSpace: false,
@@ -27,7 +27,7 @@ export default function Register() {
       username: "",
       password: "",
     },
-    validate: passwordValidate,
+    validate: registerValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
@@ -55,9 +55,18 @@ export default function Register() {
 
   /** FORMIK DOENST SUPPORT FILE UPLOAD - Create this handler */
 
-  const onUpload = async (e) => {
-    const base64 = await covertToBase65(e.target.files[0]);
-    setFile(base64);
+  const onUpload = async (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      const file = target.files[0];
+
+      try {
+        const base64 = await covertToBase64(file);
+        setFile(base64);
+      } catch (error) {
+        console.error("Error converting file to base64:", error);
+      }
+    }
   };
   return (
     <div className="container mx-auto">
@@ -80,7 +89,7 @@ export default function Register() {
                     "https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
                   }  `}
                   className={`${styles.profile_img} ${
-                    file ? "shadow-indigo-400" : "border-gray-100"
+                    file ? "shadow-gray-400" : "border-gray-100"
                   }`}
                   alt="avatar"
                 />
@@ -97,7 +106,7 @@ export default function Register() {
               <input
                 {...formik.getFieldProps("email")}
                 className={styles.textbox}
-                type="text"
+                type="email"
                 placeholder="john_doe@gmail.com"
               />
               <input
