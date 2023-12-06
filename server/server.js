@@ -4,6 +4,8 @@ import morgan from "morgan";
 
 import connect from "./database/connection.js";
 
+import router from "./router/route.js";
+
 const app = express();
 
 /** Middleware */
@@ -19,6 +21,9 @@ const port = 8080;
 app.get("/", (req, res) => {
   res.status(201).json("Home GET request");
 });
+
+/** API Routes */
+app.use("/api", router);
 
 /** Start Server only we have valid connection*/
 connect()
