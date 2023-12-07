@@ -126,7 +126,28 @@ export async function getUser(req, res) {
 
 /** PUT: http://localhost:8080/api/updateuser */
 export async function updateUser(req, res) {
-  res.json("update User route");
+  try {
+    const id = req.query.id;
+    if (id) {
+      const body = req.body;
+
+      //update the data
+      const updateResult = await UserModel.findOneAndUpdate({ _id: id }, body);
+
+      if (updateResult) {
+        // 'n' represents the number of documents matched for update
+        return res.status(200).send({ msg: "Record Updated" });
+      } else {
+        return res
+          .status(404)
+          .send({ error: "User not found or no modifications" });
+      }
+    } else {
+      return res.status(500).send({ error: "Internal Server Error" });
+    }
+  } catch (error) {
+    return res.status(401).send({ error });
+  }
 }
 
 /** GET: http://localhost:8080/api/generateOTP */
