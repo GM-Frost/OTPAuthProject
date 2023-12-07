@@ -106,7 +106,22 @@ export async function login(req, res) {
 
 /** GET: http://localhost:8080/api/user/example123 */
 export async function getUser(req, res) {
-  res.json("getUser route");
+  const { username } = req.params;
+
+  try {
+    if (!username) return res.status(400).send({ error: "Invalid Username" });
+    const user = await UserModel.findOne({ username });
+
+    if (!user) {
+      return res.status(404).send({ error: "User Not Found" });
+    }
+    //remove password from the user object
+    const { password, ...rest } = Object.assign({}, user.toJSON()); //mongoose return unnecessary object so we convert it to json and then remove password from it
+
+    return res.status(200).send(rest);
+  } catch (error) {
+    return res.status(500).send({ error: "Internal Server Error" });
+  }
 }
 
 /** PUT: http://localhost:8080/api/updateuser */
