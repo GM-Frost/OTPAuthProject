@@ -2,6 +2,23 @@ import { resolve } from "path";
 import UserModel from "../model/User.model.js";
 
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+import ENV from "../config.js";
+
+/** ----------- Middleware VERIFY USER ------- */
+export async function verifyUser(req, res, next) {
+  try {
+    const { username } = req.method == "GET" ? req.query : req.body;
+
+    //check the user existance
+    let exist = await UserModel.findOne({ username });
+    if (!exist) return res.status(404).send({ error: "User not found" });
+    next(); //go to next controller
+  } catch (error) {
+    return res.status(404).send({ error: "Authentication Error" });
+  }
+}
 
 /** POST: http://localhost:8080/api/register
  * @params: {
@@ -14,80 +31,123 @@ import bcrypt from "bcrypt";
  * "address": "test address",
  * "profile":""}
  */
-export async function register(req, res) {
-  try {
-    const { username, password, profile, email } = req.body;
-
-    //check if user already exists
-    const existUsername = new Promise((resolve, reject) => {
-      UserModel.findOne({ username: username }, function (err, user) {
-        if (err) reject(new Error(err));
-        if (user) reject({ error: "Please use unique username" });
-        resolve();
-      });
-    });
-
-    //check if email already exists
-    const existEmail = new Promise((resolve, reject) => {
-      UserModel.findOne({ email: email }, function (err, user) {
-        if (err) reject(new Error(err));
-        if (user) reject({ error: "Please use unique Email" });
-        resolve();
-      });
-    });
-
-    Promise.all([existUsername, existEmail])
-      .then(() => {
-        if (password) {
-          bcrypt
-            .hash(password, 10)
-            .then((hashedPassword) => {
-              const user = new UserModel({
-                username: username,
-                password: hashedPassword,
-                profile: profile || "",
-                email: email,
-              });
-              //return and save the result as a response
-              user
-                .save()
-                .then((result) => {
-                  res
-                    .status(201)
-                    .send({ msg: "User created successfully", result });
-                })
-                .catch((error) => res.status(500).send({ error }));
-            })
-            .catch((error) => {
-              return res.status(500).send({ error: "Unable to hash password" });
-            });
-        }
-      })
-      .catch((error) => {
-        return res.status(500).send(error);
-      });
-  } catch (error) {
-    return res.status(500).send(error);
-  }
-}
 
 /** POST: http://localhost:8080/api/login
  * @params: {
  * "username": "test",
  * "password": "test",
  */
+
+export async function register(req, res) {
+  try {
+    const { username, password, profile, email } = req.body;
+
+    // Check existing user
+    const existingUsername = await UserModel.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).send({ error: "Please use a unique username" });
+    }
+
+    // Check existing email
+    const existingEmail = await UserModel.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).send({ error: "Please use a unique email" });
+    }
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new UserModel({
+        username,
+        password: hashedPassword,
+        profile: profile || "",
+        email,
+      });
+
+      await newUser.save();
+      return res.status(201).send({ msg: "User Registered Successfully" });
+    }
+  } catch (error) {
+    return res.status(500).send({ error: "Registration failed" });
+  }
+}
+
+/** POST: http://localhost:8080/api/login */
 export async function login(req, res) {
-  res.json("login routesss");
+  const { username, password } = req.body;
+  try {
+    UserModel.findOne({ username }).then((user) => {
+      bcrypt
+        .compare(password, user.password)
+        .then((passwordCheck) => {
+          if (!passwordCheck)
+            return res.status(400).send({ error: "Don't have password" });
+          const token = jwt.sign(
+            {
+              userId: user._id,
+              username: user.username,
+            },
+            ENV.JWT_SECRET,
+            { expiresIn: "1h" }
+          );
+          return res.status(200).send({
+            msg: "Login Successful",
+            username: user.username,
+            token,
+          });
+        })
+        .catch((error) => {
+          return res.status(400).send({ error: "Password donot match" });
+        });
+    });
+  } catch (error) {
+    return res.status(500).send({ error: "Username not Found" });
+  }
 }
 
 /** GET: http://localhost:8080/api/user/example123 */
 export async function getUser(req, res) {
-  res.json("getUser route");
+  const { username } = req.params;
+
+  try {
+    if (!username) return res.status(400).send({ error: "Invalid Username" });
+    const user = await UserModel.findOne({ username });
+
+    if (!user) {
+      return res.status(404).send({ error: "User Not Found" });
+    }
+    //remove password from the user object
+    const { password, ...rest } = Object.assign({}, user.toJSON()); //mongoose return unnecessary object so we convert it to json and then remove password from it
+
+    return res.status(200).send(rest);
+  } catch (error) {
+    return res.status(500).send({ error: "Internal Server Error" });
+  }
 }
 
 /** PUT: http://localhost:8080/api/updateuser */
 export async function updateUser(req, res) {
-  res.json("update User route");
+  try {
+    const id = req.query.id;
+    if (id) {
+      const body = req.body;
+
+      //update the data
+      const updateResult = await UserModel.findOneAndUpdate({ _id: id }, body);
+
+      if (updateResult) {
+        // 'n' represents the number of documents matched for update
+        return res.status(200).send({ msg: "Record Updated" });
+      } else {
+        return res
+          .status(404)
+          .send({ error: "User not found or no modifications" });
+      }
+    } else {
+      return res.status(500).send({ error: "Internal Server Error" });
+    }
+  } catch (error) {
+    return res.status(401).send({ error });
+  }
 }
 
 /** GET: http://localhost:8080/api/generateOTP */

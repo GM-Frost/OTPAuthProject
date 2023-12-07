@@ -18,7 +18,7 @@ router.route("/authenticate").post((req, res) => {
 });
 
 //login in app
-router.route("/login").post(controller.login);
+router.route("/login").post(controller.verifyUser, controller.login); //first verify user then login
 
 /**------------------ GET METHOD ------------------ **/
 
