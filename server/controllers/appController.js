@@ -14,68 +14,48 @@ import bcrypt from "bcrypt";
  * "address": "test address",
  * "profile":""}
  */
-export async function register(req, res) {
-  try {
-    const { username, password, profile, email } = req.body;
-
-    //check if user already exists
-    const existUsername = new Promise((resolve, reject) => {
-      UserModel.findOne({ username: username }, function (err, user) {
-        if (err) reject(new Error(err));
-        if (user) reject({ error: "Please use unique username" });
-        resolve();
-      });
-    });
-
-    //check if email already exists
-    const existEmail = new Promise((resolve, reject) => {
-      UserModel.findOne({ email: email }, function (err, user) {
-        if (err) reject(new Error(err));
-        if (user) reject({ error: "Please use unique Email" });
-        resolve();
-      });
-    });
-
-    Promise.all([existUsername, existEmail])
-      .then(() => {
-        if (password) {
-          bcrypt
-            .hash(password, 10)
-            .then((hashedPassword) => {
-              const user = new UserModel({
-                username: username,
-                password: hashedPassword,
-                profile: profile || "",
-                email: email,
-              });
-              //return and save the result as a response
-              user
-                .save()
-                .then((result) => {
-                  res
-                    .status(201)
-                    .send({ msg: "User created successfully", result });
-                })
-                .catch((error) => res.status(500).send({ error }));
-            })
-            .catch((error) => {
-              return res.status(500).send({ error: "Unable to hash password" });
-            });
-        }
-      })
-      .catch((error) => {
-        return res.status(500).send(error);
-      });
-  } catch (error) {
-    return res.status(500).send(error);
-  }
-}
 
 /** POST: http://localhost:8080/api/login
  * @params: {
  * "username": "test",
  * "password": "test",
  */
+
+export async function register(req, res) {
+  try {
+    const { username, password, profile, email } = req.body;
+
+    // Check existing user
+    const existingUsername = await UserModel.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).send({ error: "Please use a unique username" });
+    }
+
+    // Check existing email
+    const existingEmail = await UserModel.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).send({ error: "Please use a unique email" });
+    }
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new UserModel({
+        username,
+        password: hashedPassword,
+        profile: profile || "",
+        email,
+      });
+
+      await newUser.save();
+      return res.status(201).send({ msg: "User Registered Successfully" });
+    }
+  } catch (error) {
+    // Log the detailed error for debugging purposes
+    console.error("Error during registration:", error);
+    return res.status(500).send({ error: "Registration failed" });
+  }
+}
+
 export async function login(req, res) {
   res.json("login routesss");
 }
