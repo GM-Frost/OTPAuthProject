@@ -127,15 +127,17 @@ export async function getUser(req, res) {
 /** PUT: http://localhost:8080/api/updateuser */
 export async function updateUser(req, res) {
   try {
-    const id = req.query.id;
-    if (id) {
-      const body = req.body;
+    const { userId } = req.user;
 
-      //update the data
-      const updateResult = await UserModel.findOneAndUpdate({ _id: id }, body);
+    if (userId) {
+      const body = req.body;
+      // update the data
+      const updateResult = await UserModel.findOneAndUpdate(
+        { _id: userId },
+        body
+      );
 
       if (updateResult) {
-        // 'n' represents the number of documents matched for update
         return res.status(200).send({ msg: "Record Updated" });
       } else {
         return res

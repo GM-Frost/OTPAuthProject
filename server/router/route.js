@@ -3,6 +3,7 @@ const router = Router();
 
 /** import all controllers */
 import * as controller from "../controllers/appController.js";
+import Auth from "../middleware/auth.js";
 
 /**------------------ POST METHOD ------------------ **/
 router.route("/register").post(controller.register);
@@ -37,7 +38,7 @@ router.route("/createResetSession").get(controller.createResetSession);
 /**------------------ PUT METHOD ------------------ **/
 
 // is use to update the user profile
-router.route("/updateuser").put(controller.updateUser);
+router.route("/updateuser").put(Auth, controller.updateUser);
 
 // is use to reset password
 router.route("/resetPassword").put(controller.resetPassword);
