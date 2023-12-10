@@ -43,6 +43,8 @@ router.route("/createResetSession").get(controller.createResetSession);
 router.route("/updateuser").put(Auth, controller.updateUser);
 
 // is use to reset password
-router.route("/resetPassword").put(controller.resetPassword);
+router
+  .route("/resetPassword")
+  .put(controller.verifyUser, controller.resetPassword);
 
 export default router;
