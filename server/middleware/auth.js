@@ -9,7 +9,7 @@ export default async function auth(req, res, next) {
       return res.status(401).json({ error: "Missing Authorization header" });
     }
 
-    // extract the token from the authorization header
+    // extract the Bearer token from the authorization header
     const token = authHeader.split(" ")[1];
 
     if (!token) {
@@ -25,4 +25,13 @@ export default async function auth(req, res, next) {
     console.error(error);
     res.status(401).json({ error: "Authentication Failed" });
   }
+}
+
+/** MIDDLEWARE FOR OTP LOCAL VARIABLE */
+export function localVariable(req, res, next) {
+  req.app.locals = {
+    OTP: null,
+    resetSession: false,
+  };
+  next();
 }
