@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 
 import ENV from "../config.js";
 
+import otpgenerator from "otp-generator";
+
 /** ----------- Middleware VERIFY USER ------- */
 export async function verifyUser(req, res, next) {
   try {
@@ -154,7 +156,12 @@ export async function updateUser(req, res) {
 
 /** GET: http://localhost:8080/api/generateOTP */
 export async function generateOTP(req, res) {
-  res.json("update User route");
+  req.app.locals.OTP = await otpgenerator.generate(6, {
+    lowerCaseAlphabets: false,
+    upperCaseAlphabets: false,
+    specialChars: false,
+  });
+  res.status(201).send({ code: req.app.locals.OTP });
 }
 
 /** GET: http://localhost:8080/api/verifyOTP */
