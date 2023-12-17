@@ -70,3 +70,71 @@ export const registerMail = async (req, res) => {
     return res.status(500).send({ error: error.message });
   }
 };
+
+/** SEND EMAIL FROM REAL GMAIL ACCOUNT */
+
+export const sendGmail = async (req, res) => {
+  let config = {
+    service: "gmail",
+    auth: {
+      user: ENV.EMAIL,
+      password: ENV.PASSWORD,
+    },
+  };
+  let transporter = nodemailer.createTransport(config);
+
+  try {
+    //Getting email from user
+    const { userEmail } = req.body;
+
+    let MailGenerator = new Mailgen({
+      theme: "default",
+      product: {
+        name: "Mailgen",
+        link: "https://mailgen.js/",
+      },
+    });
+
+    //Generate Email
+    let respose = {
+      body: {
+        name: "Somthing from Nayan",
+        intro: "Your account has been created successfully",
+        table: {
+          data: [
+            {
+              item: "Nodemailer Stack Book",
+              description: "A Backend Stack Application",
+              price: "$10.00",
+            },
+          ],
+        },
+        outro: "Looking forward to do business with you again!",
+      },
+    };
+
+    let mail = MailGenerator.generate(respose);
+
+    let message = {
+      from: ENV.EMAIL,
+      to: userEmail,
+      subject: "Welcome to Nodemailer",
+      html: mail,
+    };
+    transporter
+      .sendMail(message)
+      .then(() => {
+        return res
+          .status(201)
+          .json({ msg: "You should receive an email shortly" });
+      })
+      .catch((error) => {
+        return res.status(500).json({ error });
+      });
+
+    // res.status(201).json("Sign Up Successful");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ error: error.message });
+  }
+};
