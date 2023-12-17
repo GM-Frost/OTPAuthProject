@@ -6,20 +6,31 @@ import Mailgen from "mailgen";
 
 //https://ethereal.email/create
 
-let nodeconfig = {
-  host: "smtp.ethereal.email",
-  port: 587,
-  secure: false, //true for 465 port, false for other ports
+// let nodeconfig = {
+//   host: "smtp.ethereal.email",
+//   port: 587,
+//   secure: false, //true for 465 port, false for other ports
+//   auth: {
+//     user: ENV.EMAIL,
+//     password: ENV.PASSWORD,
+//   },
+//   tls: {
+//     rejectUnauthorized: false,
+//   },
+// };
+
+let config = {
+  service: "gmail",
   auth: {
     user: ENV.EMAIL,
-    password: ENV.PASSWORD,
+    pass: ENV.APP_PASSWORD,
   },
   tls: {
     rejectUnauthorized: false,
   },
 };
 
-let transporter = nodemailer.createTransport(nodeconfig);
+let transporter = nodemailer.createTransport(config);
 
 //Initialize Mailgen
 let MailGenerator = new Mailgen({
@@ -37,7 +48,6 @@ let MailGenerator = new Mailgen({
  * "text": "",
  * "subject": "",
  */
-
 export const registerMail = async (req, res) => {
   try {
     const { username, useremail, text, subject } = req.body;
@@ -71,29 +81,12 @@ export const registerMail = async (req, res) => {
   }
 };
 
-/** SEND EMAIL FROM REAL GMAIL ACCOUNT */
-
-export const sendGmail = async (req, res) => {
-  let config = {
-    service: "gmail",
-    auth: {
-      user: ENV.EMAIL,
-      password: ENV.PASSWORD,
-    },
-  };
-  let transporter = nodemailer.createTransport(config);
-
+/** SEND TEST EMAIL FROM REAL GMAIL ACCOUNT */
+// for Temporary use: temp-mail.org
+export const sendTestEmail = async (req, res) => {
   try {
     //Getting email from user
     const { userEmail } = req.body;
-
-    let MailGenerator = new Mailgen({
-      theme: "default",
-      product: {
-        name: "Mailgen",
-        link: "https://mailgen.js/",
-      },
-    });
 
     //Generate Email
     let respose = {
@@ -113,15 +106,16 @@ export const sendGmail = async (req, res) => {
       },
     };
 
-    let mail = MailGenerator.generate(respose);
+    let emailBody = MailGenerator.generate(respose);
 
     let message = {
       from: ENV.EMAIL,
       to: userEmail,
       subject: "Welcome to Nodemailer",
-      html: mail,
+      html: emailBody,
     };
-    transporter
+
+    await transporter
       .sendMail(message)
       .then(() => {
         return res
@@ -129,12 +123,13 @@ export const sendGmail = async (req, res) => {
           .json({ msg: "You should receive an email shortly" });
       })
       .catch((error) => {
+        console.error("Email sending error:", error);
         return res.status(500).json({ error });
       });
 
     // res.status(201).json("Sign Up Successful");
   } catch (error) {
-    console.error(error);
-    return res.status(500).send({ error: error.message });
+    console.error("Email sending error:", error);
+    return res.status(500).json({ error });
   }
 };

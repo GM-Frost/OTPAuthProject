@@ -5,15 +5,16 @@ const router = Router();
 import * as controller from "../controllers/appController.js";
 import Auth, { localVariable } from "../middleware/auth.js";
 
-import { registerMail, sendGmail } from "../controllers/mailer.js";
+import { registerMail, sendTestEmail } from "../controllers/mailer.js";
 
 /**------------------ POST METHOD ------------------ **/
 router.route("/register").post(controller.register);
 
 //send email
 router.route("/registerMail").post(registerMail);
+
 //send email from gmail
-router.route("/registerGmail").post(sendGmail);
+router.route("/registerGmail").post(sendTestEmail);
 
 //authenticate user
 router.route("/authenticate").post((req, res) => {
