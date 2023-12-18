@@ -81,7 +81,7 @@ export async function updateUser(response: any) {
 
 //----------------- GENERATE OTP ----------------//
 
-export async function generateOTP(username) {
+export async function generateOTP(username: string) {
   try {
     const {
       data: { code },
