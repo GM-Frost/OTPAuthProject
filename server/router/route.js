@@ -17,7 +17,7 @@ router.route("/registerMail").post(registerMail);
 router.route("/registerGmail").post(sendTestEmail);
 
 //authenticate user
-router.route("/authenticate").post((req, res) => {
+router.route("/authenticate").post(controller.verifyUser, (req, res) => {
   res.end();
 });
 
