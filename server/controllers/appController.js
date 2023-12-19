@@ -126,7 +126,19 @@ export async function getUser(req, res) {
   }
 }
 
-/** PUT: http://localhost:8080/api/updateuser */
+/** PUT: http://localhost:8080/api/updateuser
+ *
+ *
+ * @param:{
+ * "id":"<token>"
+ * }
+ * body: {
+ * firstname: "test",
+ * address: "test address",
+ * profile: "test profile",
+ * }
+ */
+
 export async function updateUser(req, res) {
   try {
     const { userId } = req.user;

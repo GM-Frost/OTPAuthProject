@@ -7,8 +7,16 @@ import { passwordValidate } from "../helper/Validate";
 
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
 
+import useFetch from "../hooks/fetch.hook";
+
+import { useAuthStore } from "../store/store";
+
 export default function Password() {
   const [showCondition, setShowCondition] = useState(false);
+  const { username } = useAuthStore((state) => state.user);
+
+  const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`);
+
   //Validate the condition of passwords
   const [passwordConditions, setPassowrdConditions] = useState({
     noSpace: false,
@@ -48,13 +56,20 @@ export default function Password() {
     });
   };
 
+  if (isLoading) return <h1 className="text-2xl font-bold">Loading...</h1>;
+
+  if (serverError)
+    return <h1 className="text-xl text-red-500">{serverError.message}</h1>;
+
   return (
     <div className="container mx-auto">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="flex justify-center items-center h-screen">
         <div className={styles.glass}>
           <div className="title flex flex-col items-center">
-            <h4 className="text-5xl font-bold">Hello Again!</h4>
+            <h4 className="text-5xl font-bold">
+              Hello {apiData?.firstName || apiData?.username}!
+            </h4>
             <span className="py-4 text-xl w-2/3 text-center text-gray-500">
               Explore More by connecting with us.
             </span>
@@ -63,7 +78,10 @@ export default function Password() {
           <form className="py-1" onSubmit={formik.handleSubmit}>
             <div className="profile flex justify-center py-4">
               <img
-                src="https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
+                src={`${
+                  apiData?.profile ||
+                  "https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
+                }`}
                 className={styles.profile_img}
                 alt="avatar"
               />
