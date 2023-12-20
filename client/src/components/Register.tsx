@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "../styles/Username.module.css";
 import { useFormik } from "formik";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import { registerValidate } from "../helper/Validate";
 
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
 import covertToBase64 from "../helper/ConvertImage";
+
+import { registerUser } from "../helper/helper";
 
 export default function Register() {
   const [showCondition, setShowCondition] = useState(false);
@@ -23,16 +25,21 @@ export default function Register() {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
-      username: "",
-      password: "",
+      email: "fimabiv218@beeplush.com",
+      username: "example123",
+      password: "Example123@123",
     },
     validate: registerValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
       values = await Object.assign(values, { profile: file || "" });
-      console.log(values);
+      let registerPromise = registerUser(values);
+      toast.promise(registerPromise, {
+        loading: "Creating...",
+        success: <b>Register Successfully !!!</b>,
+        error: <b>Could not Register</b>,
+      });
     },
   });
 
