@@ -20,12 +20,14 @@ export default function useFetch(query: any) {
       try {
         setData((prev) => ({ ...prev, isLoading: true }));
 
-        const { data, status } = await axios.get(`/api/${query}`);
-        if (status === 201) {
-          setData((prev) => ({ ...prev, isLoading: false }));
-          setData((prev) => ({ ...prev, apiData: data, status: status }));
-        }
-        setData((prev) => ({ ...prev, isLoading: false }));
+        const response = await axios.get(`/api/${query}`);
+
+        setData((prev) => ({
+          ...prev,
+          isLoading: false,
+          apiData: response.data,
+          status: response.status,
+        }));
       } catch (error) {
         setData((prev) => ({ ...prev, isLoading: false, serverError: error }));
       }
