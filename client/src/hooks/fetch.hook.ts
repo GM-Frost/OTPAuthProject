@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 /** SERVER DOMAIN - BASE URL */
-axios.defaults.baseURL = import.meta.env.REACT_APP_SERVER_URL;
+axios.defaults.baseURL = import.meta.env.VITE_REACT_APP_DOMAIN;
 
 /** CUSTOM HOOKS */
 export default function useFetch(query) {

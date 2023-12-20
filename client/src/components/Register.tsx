@@ -23,6 +23,7 @@ export default function Register() {
     hasNumber: false,
   });
 
+  console.log(file);
   const formik = useFormik({
     initialValues: {
       email: "fimabiv218@beeplush.com",

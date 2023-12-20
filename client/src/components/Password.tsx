@@ -13,12 +13,12 @@ import { useAuthStore } from "../store/store";
 
 export default function Password() {
   const [showCondition, setShowCondition] = useState(false);
-  const { username } = useAuthStore((state) => state.user);
+  const { username } = useAuthStore((state) => state.auth);
 
   const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`);
 
   //Validate the condition of passwords
-  const [passwordConditions, setPassowrdConditions] = useState({
+  const [passwordConditions, setPasswordConditions] = useState({
     noSpace: false,
     containsSpecialChar: false,
     minLength: false,
@@ -44,7 +44,7 @@ export default function Password() {
     setShowCondition(true);
     const password = e.target.value;
 
-    setPassowrdConditions({
+    setPasswordConditions({
       noSpace: !password.includes(" "),
       containsSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(
         password

@@ -10,10 +10,11 @@ import { useEffect } from "react";
 export default function Username() {
   const navigate = useNavigate();
 
-  const setUsername = useAuthStore((state) => state.username);
+  const setUsername = useAuthStore((state) => state.setUsername);
+
   const formik = useFormik({
     initialValues: {
-      username: "",
+      username: "example123",
     },
     validate: usernameValidate,
     validateOnBlur: false,
