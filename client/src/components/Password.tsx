@@ -15,7 +15,7 @@ export default function Password() {
   const [showCondition, setShowCondition] = useState(false);
   const { username } = useAuthStore((state) => state.auth);
 
-  const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`);
+  const [{ isLoading, apiData, serverError }] = useFetch(`user/${username}`);
 
   //Validate the condition of passwords
   const [passwordConditions, setPasswordConditions] = useState({

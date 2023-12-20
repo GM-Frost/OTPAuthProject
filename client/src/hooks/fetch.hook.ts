@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 axios.defaults.baseURL = import.meta.env.VITE_REACT_APP_DOMAIN;
 
 /** CUSTOM HOOKS */
-export default function useFetch(query) {
+export default function useFetch(query: any) {
   const [getData, setData] = useState({
     isLoading: false,
     apiData: undefined,
@@ -32,5 +32,6 @@ export default function useFetch(query) {
     };
     fetchData();
   }, [query]);
+
   return [getData, setData];
 }
