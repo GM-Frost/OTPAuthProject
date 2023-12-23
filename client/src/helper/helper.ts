@@ -1,12 +1,11 @@
 import axios from "axios";
 
 /** SERVER DOMAIN - BASE URL */
-axios.defaults.baseURL = import.meta.env.REACT_APP_SERVER_URL;
+axios.defaults.baseURL = import.meta.env.VITE_REACT_APP_DOMAIN;
 
 /** Making API Request */
 
 //---------AUTHENTICATION FUNCTION----------------//
-
 export async function authenticate(username: string) {
   try {
     return await axios.post("/api/authenticate", { username });
