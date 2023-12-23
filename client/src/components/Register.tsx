@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Username.module.css";
 import { useFormik } from "formik";
 import { Toaster, toast } from "react-hot-toast";
@@ -13,6 +13,7 @@ import { registerUser } from "../helper/helper";
 export default function Register() {
   const [showCondition, setShowCondition] = useState(false);
   const [file, setFile] = useState<string | null>(null);
+  const navigate = useNavigate();
   //Validate the condition of passwords
   const [passwordConditions, setPassowrdConditions] = useState({
     noSpace: false,
@@ -26,9 +27,9 @@ export default function Register() {
   console.log(file);
   const formik = useFormik({
     initialValues: {
-      email: "fimabiv218@beeplush.com",
-      username: "example123",
-      password: "Example123@123",
+      email: "",
+      username: "",
+      password: "",
     },
     validate: registerValidate,
     validateOnBlur: false,
@@ -41,6 +42,10 @@ export default function Register() {
         success: <b>Register Successfully !!!</b>,
         error: <b>Could not Register</b>,
       });
+      registerPromise.then(function () {
+        navigate("/");
+      });
+      console.log(values);
     },
   });
 
@@ -62,13 +67,14 @@ export default function Register() {
   };
 
   /** FORMIK DOENST SUPPORT FILE UPLOAD - Create this handler */
-
   const onUpload = async (e: React.SyntheticEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
       const file = target.files[0];
 
       try {
+        const formData = new FormData();
+        formData.append("profile", file);
         const base64 = await covertToBase64(file);
         setFile(base64);
       } catch (error) {
@@ -76,6 +82,7 @@ export default function Register() {
       }
     }
   };
+
   return (
     <div className="container mx-auto">
       <Toaster position="top-center" reverseOrder={false} />

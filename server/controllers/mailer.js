@@ -50,7 +50,7 @@ let MailGenerator = new Mailgen({
  */
 export const registerMail = async (req, res) => {
   try {
-    const { username, useremail, text, subject } = req.body;
+    const { username, userEmail, text, subject } = req.body;
 
     // body of the email
     var email = {
@@ -66,7 +66,7 @@ export const registerMail = async (req, res) => {
 
     let message = {
       from: ENV.EMAIL,
-      to: useremail,
+      to: userEmail,
       subject: subject || "Thank you for Registering with us",
       html: emailBody,
     };
