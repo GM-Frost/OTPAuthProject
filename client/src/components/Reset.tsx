@@ -8,7 +8,14 @@ import { resetPasswordValidate } from "../helper/Validate";
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
 import { useLocation } from "react-router-dom";
 
+import { resetPassword } from "../helper/helper";
+import { useAuthStore } from "../store/store";
+
+import { useNavigate } from "react-router-dom";
+
 export default function Reset() {
+  const { username } = useAuthStore((state) => state.auth);
+
   const [showCondition, setShowCondition] = useState(false);
   //Validate the condition of passwords
   const [passwordConditions, setPassowrdConditions] = useState({
@@ -20,6 +27,8 @@ export default function Reset() {
     hasNumber: false,
   });
 
+  const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
       password: "",
@@ -29,7 +38,16 @@ export default function Reset() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values);
+      let resetPromise = resetPassword({ username, password: values.password });
+      toast.promise(resetPromise, {
+        loading: "Resetting password...",
+        success: "Password reset successfully",
+        error: "Error resetting password",
+      });
+
+      resetPromise.then(function () {
+        navigate("/password");
+      });
     },
   });
 

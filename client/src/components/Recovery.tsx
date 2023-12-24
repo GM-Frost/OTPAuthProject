@@ -12,7 +12,6 @@ export default function Recovery() {
   const [OTP, setOTP] = useState();
   useEffect(() => {
     generateOTP(username).then((OTP) => {
-      console.log(OTP);
       if (OTP) toast.success("OTP sent to your email address");
       else toast.error("Error sending OTP");
     });
