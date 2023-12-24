@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "../styles/Username.module.css";
 import { useFormik } from "formik";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { resetPasswordValidate } from "../helper/Validate";
 
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
+import { useLocation } from "react-router-dom";
 
 export default function Reset() {
   const [showCondition, setShowCondition] = useState(false);
@@ -48,6 +49,15 @@ export default function Reset() {
       hasNumber: /[0-9]+/.test(password),
     });
   };
+
+  const location = useLocation();
+  const otpVerified = location.state?.otpVerified;
+
+  useEffect(() => {
+    if (otpVerified) {
+      toast.success("OTP verified successfully");
+    }
+  }, [otpVerified]);
 
   return (
     <div className="container mx-auto">
