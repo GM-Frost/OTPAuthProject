@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "../styles/Username.module.css";
 import { useFormik } from "formik";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { resetPasswordValidate } from "../helper/Validate";
 
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
+import { useLocation } from "react-router-dom";
+
+import { resetPassword } from "../helper/helper";
+import { useAuthStore } from "../store/store";
+
+import { useNavigate } from "react-router-dom";
+import useFetch from "../hooks/fetch.hook";
 
 export default function Reset() {
+  const { username } = useAuthStore((state) => state.auth);
+
   const [showCondition, setShowCondition] = useState(false);
   //Validate the condition of passwords
   const [passwordConditions, setPassowrdConditions] = useState({
@@ -19,6 +28,11 @@ export default function Reset() {
     hasNumber: false,
   });
 
+  const navigate = useNavigate();
+
+  const [{ isLoading, apiData, status, serverError }] =
+    useFetch("createResetSession");
+
   const formik = useFormik({
     initialValues: {
       password: "",
@@ -28,7 +42,16 @@ export default function Reset() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values);
+      let resetPromise = resetPassword({ username, password: values.password });
+      toast.promise(resetPromise, {
+        loading: "Resetting password...",
+        success: "Password reset successfully",
+        error: "Error resetting password",
+      });
+
+      resetPromise.then(function () {
+        navigate("/password");
+      });
     },
   });
 
@@ -48,6 +71,22 @@ export default function Reset() {
       hasNumber: /[0-9]+/.test(password),
     });
   };
+
+  const location = useLocation();
+  const otpVerified = location.state?.otpVerified;
+
+  useEffect(() => {
+    if (otpVerified) {
+      toast.success("OTP verified successfully");
+    }
+  }, [otpVerified]);
+
+  if (isLoading) return <h1 className="text-2xl font-bold">Loading...</h1>;
+
+  if (serverError)
+    return <h1 className="text-xl text-red-500">{serverError.message}</h1>;
+
+  if (status && status !== 201) return navigate("/password");
 
   return (
     <div className="container mx-auto">

@@ -190,8 +190,7 @@ export async function verifyOTP(req, res) {
 /** GET: http://localhost:8080/api/createResetSession */
 export async function createResetSession(req, res) {
   if (req.app.locals.resetSession) {
-    req.app.locals.resetSession = false; // allow access to this route only once
-    return res.status(201).send({ msg: "Access Granted" });
+    return res.status(201).send({ flag: req.app.locals.resetSession }); // allow access to this route only once
   }
   return res.status(440).send({ error: "Session Expired" });
 }
@@ -217,7 +216,7 @@ export async function resetPassword(req, res) {
       { username: user.username },
       { password: hashedPassword }
     );
-
+    req.app.locals.resetSession = false;
     return res.status(201).send({ msg: "Record Updated" });
   } catch (error) {
     return res

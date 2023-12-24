@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Username.module.css";
 import { useFormik } from "formik";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { passwordValidate } from "../helper/Validate";
-
-import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
+import { verifyPassword } from "../helper/helper";
 
 import useFetch from "../hooks/fetch.hook";
 
@@ -17,6 +16,8 @@ export default function Password() {
 
   const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`);
 
+  const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
       password: "",
@@ -25,7 +26,21 @@ export default function Password() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values);
+      let loginPromise = verifyPassword({
+        username,
+        password: values.password,
+      });
+      toast.promise(loginPromise, {
+        loading: "Verifying...",
+        success: <b>Verified Successfully !!!</b>,
+        error: <b>Password did not match</b>,
+      });
+
+      loginPromise.then((res) => {
+        let { token } = res.data;
+        localStorage.setItem("token", token);
+        navigate("/profile");
+      });
     },
   });
 

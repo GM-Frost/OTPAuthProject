@@ -1,10 +1,24 @@
 import axios from "axios";
-
+import { jwtDecode } from "jwt-decode";
 /** SERVER DOMAIN - BASE URL */
 axios.defaults.baseURL = import.meta.env.VITE_REACT_APP_DOMAIN;
 
 /** Making API Request */
+//----------------- GETTING USER INFO FROM TOKEN ----------------//
 
+export async function getUsernameFromToken() {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return { error: "Cannot find User Token" };
+    }
+    let decode = jwtDecode(token);
+    return decode;
+  } catch (error) {
+    throw new Error("Error decoding User Token");
+  }
+}
 //---------AUTHENTICATION FUNCTION----------------//
 export async function authenticate(username: string) {
   try {

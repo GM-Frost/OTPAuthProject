@@ -5,7 +5,6 @@ import { Toaster } from "react-hot-toast";
 import { usernameValidate } from "../helper/Validate";
 
 import { useAuthStore } from "../store/store";
-import { useEffect } from "react";
 
 export default function Username() {
   const navigate = useNavigate();
