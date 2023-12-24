@@ -12,6 +12,7 @@ import { resetPassword } from "../helper/helper";
 import { useAuthStore } from "../store/store";
 
 import { useNavigate } from "react-router-dom";
+import useFetch from "../hooks/fetch.hook";
 
 export default function Reset() {
   const { username } = useAuthStore((state) => state.auth);
@@ -28,6 +29,9 @@ export default function Reset() {
   });
 
   const navigate = useNavigate();
+
+  const [{ isLoading, apiData, status, serverError }] =
+    useFetch("createResetSession");
 
   const formik = useFormik({
     initialValues: {
@@ -76,6 +80,13 @@ export default function Reset() {
       toast.success("OTP verified successfully");
     }
   }, [otpVerified]);
+
+  if (isLoading) return <h1 className="text-2xl font-bold">Loading...</h1>;
+
+  if (serverError)
+    return <h1 className="text-xl text-red-500">{serverError.message}</h1>;
+
+  if (status && status !== 201) return navigate("/password");
 
   return (
     <div className="container mx-auto">
