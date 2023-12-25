@@ -10,7 +10,7 @@ interface IFetchData {
 }
 
 /** SERVER DOMAIN - BASE URL */
-axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL as string;
+axios.defaults.baseURL = import.meta.env.VITE_REACT_APP_DOMAIN as string;
 
 /** CUSTOM HOOKS */
 export default function useFetch(

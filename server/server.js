@@ -16,15 +16,6 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.disable("x-powered-by"); // less hackers know about our stack
 
-app.use(
-  cors({
-    origin: "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-    optionsSuccessStatus: 204,
-  })
-);
-
 const port = process.env.PORT;
 
 /** Http GET request */
