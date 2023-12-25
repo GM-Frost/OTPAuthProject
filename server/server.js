@@ -11,12 +11,7 @@ import router from "./router/route.js";
 const app = express();
 
 /** Middleware */
-app.use(cors({
-  origin: "*",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-  optionsSuccessStatus: 204,
-}));
+app.use(cors());
 
 app.use(express.json());
 app.use(morgan("tiny"));
