@@ -14,7 +14,9 @@ import { useAuthStore } from "../store/store";
 import { useNavigate } from "react-router-dom";
 import useFetch from "../hooks/fetch.hook";
 
-export default function Reset() {
+interface IResetProps {}
+
+const Reset: React.FC<IResetProps> = () => {
   const { username } = useAuthStore((state) => state.auth);
 
   const [showCondition, setShowCondition] = useState(false);
@@ -30,8 +32,7 @@ export default function Reset() {
 
   const navigate = useNavigate();
 
-  const [{ isLoading, apiData, status, serverError }] =
-    useFetch("createResetSession");
+  const [{ isLoading, status, serverError }] = useFetch("createResetSession");
 
   const formik = useFormik({
     initialValues: {
@@ -86,7 +87,11 @@ export default function Reset() {
   if (serverError)
     return <h1 className="text-xl text-red-500">{serverError.message}</h1>;
 
-  if (status && status !== 201) return navigate("/password");
+  if (status && status !== 201) {
+    // eslint-disable-next-line
+    navigate("/password");
+    return null;
+  }
 
   return (
     <div className="container mx-auto">
@@ -187,4 +192,6 @@ export default function Reset() {
       </div>
     </div>
   );
-}
+};
+
+export default Reset;

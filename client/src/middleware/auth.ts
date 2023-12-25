@@ -1,10 +1,14 @@
 //Create Authorize Router
 
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/store";
 
-export const AuthorizeUser = ({ children }) => {
+interface IAuthorizeUserProps {
+  children: ReactNode;
+}
+
+export const AuthorizeUser = ({ children }: IAuthorizeUserProps) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   useEffect(() => {
@@ -16,7 +20,7 @@ export const AuthorizeUser = ({ children }) => {
   return children;
 };
 
-export const ProtectPasswordRoute = ({ children }) => {
+export const ProtectPasswordRoute = ({ children }: IAuthorizeUserProps) => {
   const navigate = useNavigate();
   const username = useAuthStore.getState().auth.username;
 

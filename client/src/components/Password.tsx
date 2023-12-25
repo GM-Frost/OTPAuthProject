@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Username.module.css";
 import { useFormik } from "formik";
@@ -11,7 +10,6 @@ import useFetch from "../hooks/fetch.hook";
 import { useAuthStore } from "../store/store";
 
 export default function Password() {
-  const [showCondition, setShowCondition] = useState(false);
   const { username } = useAuthStore((state) => state.auth);
 
   const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`);

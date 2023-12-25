@@ -3,19 +3,29 @@ import cors from "cors";
 import morgan from "morgan";
 
 import connect from "./database/connection.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 import router from "./router/route.js";
 
 const app = express();
 
 /** Middleware */
-
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 app.use(morgan("tiny"));
 app.disable("x-powered-by"); // less hackers know about our stack
 
-const port = 8080;
+app.use(
+  cors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+    optionsSuccessStatus: 204,
+  })
+);
+
+const port = process.env.PORT;
 
 /** Http GET request */
 app.get("/", (req, res) => {
@@ -24,6 +34,12 @@ app.get("/", (req, res) => {
 
 /** API Routes */
 app.use("/api", router);
+
+app.get("/hello", (req, res) => {
+  res.json({
+    msg: "Hello There!",
+  });
+});
 
 /** Start Server only we have valid connection*/
 connect()
