@@ -24,7 +24,6 @@ export default function Register() {
     hasNumber: false,
   });
 
-  console.log(file);
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -45,7 +44,6 @@ export default function Register() {
       registerPromise.then(function () {
         navigate("/");
       });
-      console.log(values);
     },
   });
 

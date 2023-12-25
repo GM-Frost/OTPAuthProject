@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Username.module.css";
 import { useFormik } from "formik";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { usernameValidate } from "../helper/Validate";
 
 import { useAuthStore } from "../store/store";
+import { useEffect } from "react";
 
 export default function Username() {
   const navigate = useNavigate();
@@ -23,6 +24,28 @@ export default function Username() {
       navigate("/password");
     },
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://otpauthproject-server.onrender.com/hello"
+        );
+        const data = await response.json();
+
+        toast.promise(Promise.resolve(data.msg === "Hello There!"), {
+          loading: "Starting Backend...It may take 1 minute",
+          success: "Backend Started successfully",
+          error: null,
+        });
+      } catch (error) {
+        // Handle the error without displaying an error message
+        console.error("Error fetching data from backend", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="container mx-auto">
