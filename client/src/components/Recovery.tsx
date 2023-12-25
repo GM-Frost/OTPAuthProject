@@ -9,7 +9,7 @@ export default function Recovery() {
   const navigate = useNavigate();
   const { username } = useAuthStore((state) => state.auth);
 
-  const [OTP, setOTP] = useState();
+  const [OTP, setOTP] = useState<string>("");
   useEffect(() => {
     generateOTP(username).then((OTP) => {
       if (OTP) toast.success("OTP sent to your email address");
@@ -17,7 +17,7 @@ export default function Recovery() {
     });
   }, [username]);
 
-  async function onSubmit(e) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     try {

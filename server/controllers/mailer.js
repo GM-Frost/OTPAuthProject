@@ -1,7 +1,9 @@
 /** SENDING MAIL TO THE USER EMAIL */
 import nodemailer from "nodemailer";
 
-import ENV from "../config.js";
+import dotenv from "dotenv";
+dotenv.config();
+
 import Mailgen from "mailgen";
 
 //https://ethereal.email/create
@@ -19,11 +21,14 @@ import Mailgen from "mailgen";
 //   },
 // };
 
+let gmailEmail = process.env.EMAIL;
+let gmailPass = process.env.APP_PASSWORD;
+
 let config = {
   service: "gmail",
   auth: {
-    user: ENV.EMAIL,
-    pass: ENV.APP_PASSWORD,
+    user: `${gmailEmail}`,
+    pass: `${gmailPass}`,
   },
   tls: {
     rejectUnauthorized: false,
@@ -65,7 +70,7 @@ export const registerMail = async (req, res) => {
     var emailBody = MailGenerator.generate(email);
 
     let message = {
-      from: ENV.EMAIL,
+      from: gmailEmail,
       to: userEmail,
       subject: subject || "Thank you for Registering with us",
       html: emailBody,
@@ -109,7 +114,7 @@ export const sendTestEmail = async (req, res) => {
     let emailBody = MailGenerator.generate(respose);
 
     let message = {
-      from: ENV.EMAIL,
+      from: gmailEmail,
       to: userEmail,
       subject: "Welcome to Nodemailer",
       html: emailBody,

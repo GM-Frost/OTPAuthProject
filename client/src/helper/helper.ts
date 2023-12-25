@@ -1,7 +1,7 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 /** SERVER DOMAIN - BASE URL */
-axios.defaults.baseURL = import.meta.env.VITE_REACT_APP_DOMAIN;
+axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL as string;
 
 /** Making API Request */
 //----------------- GETTING USER INFO FROM TOKEN ----------------//

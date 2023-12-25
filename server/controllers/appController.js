@@ -4,8 +4,6 @@ import UserModel from "../model/User.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import ENV from "../config.js";
-
 import otpgenerator from "otp-generator";
 
 /** ----------- Middleware VERIFY USER ------- */
@@ -88,7 +86,7 @@ export async function login(req, res) {
               userId: user._id,
               username: user.username,
             },
-            ENV.JWT_SECRET,
+            process.env.JWT_SECRET,
             { expiresIn: "1h" }
           );
           return res.status(200).send({

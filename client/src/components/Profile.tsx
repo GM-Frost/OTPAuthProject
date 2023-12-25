@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "../styles/Username.module.css";
 import extend from "../styles/Profile.module.css";
 
@@ -12,13 +12,21 @@ import useFetch from "../hooks/fetch.hook";
 
 import { updateUser } from "../helper/helper";
 
+interface IFormValues {
+  firstName: string;
+  lastName: string;
+  email: string;
+  mobile: string;
+  address: string;
+}
+
 export default function Profile() {
   const [file, setFile] = useState<string | null>(null);
   const [{ isLoading, apiData, serverError }] = useFetch();
   const navigate = useNavigate();
   //getting user info from the token
 
-  const formik = useFormik({
+  const formik = useFormik<IFormValues>({
     initialValues: {
       firstName: apiData?.firstName || "",
       lastName: apiData?.lastName || "",

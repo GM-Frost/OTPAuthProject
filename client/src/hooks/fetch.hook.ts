@@ -2,12 +2,21 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { getUsernameFromToken } from "../helper/helper";
 
+interface IFetchData {
+  isLoading: boolean;
+  apiData?: any; // Replace with the actual type of apiData
+  status: number | null;
+  serverError: Error | null;
+}
+
 /** SERVER DOMAIN - BASE URL */
-axios.defaults.baseURL = import.meta.env.VITE_REACT_APP_DOMAIN;
+axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL as string;
 
 /** CUSTOM HOOKS */
-export default function useFetch(query: any) {
-  const [getData, setData] = useState({
+export default function useFetch(
+  query?: string | null
+): [IFetchData, React.Dispatch<React.SetStateAction<IFetchData>>] {
+  const [getData, setData] = useState<IFetchData>({
     isLoading: false,
     apiData: undefined,
     status: null,
@@ -19,7 +28,7 @@ export default function useFetch(query: any) {
       try {
         setData((prev) => ({ ...prev, isLoading: true }));
 
-        const { username } = !query ? await getUsernameFromToken() : "";
+        const { username }: any = !query ? await getUsernameFromToken() : "";
 
         const { data, status } = !query
           ? await axios.get(`/api/user/${username}`)
@@ -32,7 +41,11 @@ export default function useFetch(query: any) {
           status,
         }));
       } catch (error) {
-        setData((prev) => ({ ...prev, isLoading: false, serverError: error }));
+        setData((prev) => ({
+          ...prev,
+          isLoading: false,
+          serverError: error as Error,
+        }));
       }
     };
     fetchData();
