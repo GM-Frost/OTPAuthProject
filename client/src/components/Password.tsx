@@ -37,7 +37,7 @@ export default function Password() {
       });
 
       loginPromise.then((res) => {
-        let { token } = res.data;
+        let { token } = res?.data || {};
         localStorage.setItem("token", token);
         navigate("/profile");
       });
