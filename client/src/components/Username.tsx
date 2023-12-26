@@ -5,12 +5,15 @@ import toast, { Toaster } from "react-hot-toast";
 import { usernameValidate } from "../helper/Validate";
 
 import { useAuthStore } from "../store/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Footer from "./Footer";
 
 export default function Username() {
   const navigate = useNavigate();
 
   const setUsername = useAuthStore((state) => state.setUsername);
+  const [message, setMessage] = useState<string>("Loading Backend....");
+  const [loading, setLoading] = useState<boolean>(true);
 
   const formik = useFormik({
     initialValues: {
@@ -24,7 +27,6 @@ export default function Username() {
       navigate("/password");
     },
   });
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,15 +34,16 @@ export default function Username() {
           "https://otpauthproject-server.onrender.com/hello"
         );
         const data = await response.json();
-
-        toast.promise(Promise.resolve(data.msg === "Hello There!"), {
-          loading: "Starting Backend...It may take 1 minute",
-          success: "Backend Started successfully",
-          error: null,
-        });
+        if (data.msg === "Hello There!") {
+          setMessage("Backend Fetched");
+          setLoading(false);
+          toast.success("Backend Fetched");
+        }
       } catch (error) {
-        // Handle the error without displaying an error message
-        console.error("Error fetching data from backend", error);
+        console.error("Error fetching data:", error);
+        setMessage("Error Fetching Backend");
+        setLoading(false);
+        toast.error("Error Fetching Backend");
       }
     };
 
@@ -49,8 +52,11 @@ export default function Username() {
 
   return (
     <div className="container mx-auto">
+      <div className="flex text-center justify-center items-center text-indigo-800">
+        {loading ? "Starting Render Backend... Please wait for 1 min" : null}
+      </div>
       <Toaster position="top-center" reverseOrder={false}></Toaster>
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen flex-col">
         <div className={styles.glass}>
           <div className="title flex flex-col items-center">
             <h4 className="text-5xl font-bold">Hello Again!</h4>
@@ -90,6 +96,7 @@ export default function Username() {
             </div>
           </form>
         </div>
+        <Footer />
       </div>
     </div>
   );
